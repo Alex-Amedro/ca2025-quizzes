@@ -1,40 +1,79 @@
-# Functional code all made by me (no exceptions: no line completion and no generated code)
+# Functional code all made by me (no exceptions: no line completion and no generated code) (if you find something that seems AI generated i'm may be just to inteligent or more stupid than a probabilist model, we'll never know)
 # Some comments may be hard to understand due to my English, to counter that comments could have been made by Copilot
-.data
-result1: .word 0
-result2: .word 0
-result3: .word 0
 
+#you can run the programme and look at the memory addresses to see the results  
+
+.data
+initial_value1: .word 1000
+initial_value2: .word 10000
+initial_value3: .word 100000
+
+encode_value1: .word 0
+encode_value2: .word 0
+encode_value3: .word 0 
+
+decode_value1: .word 0
+decode_value2: .word 0
+decode_value3: .word 0
+
+# List of registers used:
+# x1: input value / input addresses
+# x2: result 
+# x3 - x19: working registers
+# x20: ra (return value for jal)
+# x21: sp (stack pointer)
+
+# explanation will only be provide for the first test.
 .text
 .global main
 
 main:
-    # Test 1: encode 1000
-    li x1, 1000
-    jal x20, encode_uf8
-    la x10, result1
-    sw x2, 0(x10)
+    li x21, 0x10000                         # init stack pointer
     
+    # Test 1: encode 1000
+    la x1, initial_value1                   # loading the address           
+    lw x1, 0(x1)                            # loading the value
+    jal x20, encode_uf8                     # call encode function
+    la x10, encode_value1                   # loading the address to store the result
+    sw x2, 0(x10)                           # storing the result
+    la x1, encode_value1                    # loading the address of the encoded value
+    lw x1, 0(x1)                            # loading the encoded value
+    jal x20, decode_uf8                     # call decode function
+    la x10, decode_value1                   # loading the address to store the result
+    sw x2, 0(x10)                           # storing the result
+
     # Test 2: encode 10000
-    li x1, 10000
+    la x1, initial_value2
+    lw x1, 0(x1)
     jal x20, encode_uf8
-    la x10, result2
+    la x10, encode_value2
+    sw x2, 0(x10)
+    la x1, encode_value2
+    lw x1, 0(x1)
+    jal x20, decode_uf8
+    la x10, decode_value2
     sw x2, 0(x10)
     
     # Test 3: encode 100000
-    li x1, 100000
+    la x1, initial_value3
+    lw x1, 0(x1)
     jal x20, encode_uf8
-    la x10, result3
+    la x10, encode_value3
     sw x2, 0(x10)
-    
+    la x1, encode_value3
+    lw x1, 0(x1)
+    jal x20, decode_uf8
+    la x10, decode_value3
+    sw x2, 0(x10)
+
     j exit_program
 
+
 encode_uf8:
-    
     addi x21, x21, -4
     sw x20, 0(x21)
     
-    jal x20, init_registers
+    jal x20, init_registers_encode
     blt x1, x3, skip_encode
     li x3, 0
 
@@ -123,8 +162,8 @@ encode_uf8:
     or x2, x2, x7                    # combine exponent + mantissa
 
     j encode_return
-
-init_registers:
+    
+init_registers_encode:
     li x2, 0                         # return value
     li x3, 16                        # comparison value
     li x4, 32                        # counter for CLZ
@@ -133,8 +172,40 @@ init_registers:
 
 skip_encode:
     add x2, x0, x1                   # if value < 16, just return value
-    
+    j encode_return
+
 encode_return:
+    lw x20, 0(x21)
+    addi x21, x21, 4
+    jr x20
+ 
+decode_uf8:
+    # sauvegarde x20
+    addi x21, x21, -4
+    sw x20, 0(x21)
+    
+    jal x20, init_decode           # init
+    and x3, x1, x6                 # mantissa calculation
+    srl x4, x1, x7                 # exponent calculation 
+    sub x5, x8, x4                 # offset calculation
+    srl x5, x9, x5                 # offset
+    sll x5, x5, x7 
+    sll x2, x3, x4                 # decode uf8 result
+    add x2, x2, x5
+    j return_decode
+
+init_decode:                   
+    li x2, 0                       # return value
+    li x3, 0                       # mantissa
+    li x4, 0                       # exponent
+    li x5, 0                       # offset 
+    li x6, 0x0F                    # cst
+    li x7, 4                       # cst
+    li x8, 15                      # cst
+    li x9, 0x7FFF                  # cst
+    jr x20
+
+return_decode:
     lw x20, 0(x21)
     addi x21, x21, 4
     jr x20
