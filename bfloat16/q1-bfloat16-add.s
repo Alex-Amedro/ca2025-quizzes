@@ -4,9 +4,8 @@
 #you can run the programme and look at the memory addresses to see the results  
 
 .data
-bf16_a: .word 0x3F80
-bf16_b: .word 0x4000
-result: .word 0
+bf16_a: .word 0
+bf16_b: .word 0
 
 # List of registers used:
 # x1: result value 
@@ -155,10 +154,10 @@ return_zero:
     j return
 
 return:
-    la x7, result
+    la x7, float32
     sw x1, 0(x7)
     j end 
 
 end: 
-    li a7, 10
+    li a0, 10
     ecall
