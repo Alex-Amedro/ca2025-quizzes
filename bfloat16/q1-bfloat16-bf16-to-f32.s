@@ -23,14 +23,11 @@ f32_to_bf16:
     lh x1, 0(x1)            # load the bfloat16 value
     slli x4, x1, 16         # shift left to position as float32
 
-
-
-
 return_f32:
     la x7, float32
     sw x4, 0(x7)            # store the float32 value
     j end 
 
 end: 
-    li a0, 10               # exit syscall
+    li a7, 10               # exit syscall
     ecall    

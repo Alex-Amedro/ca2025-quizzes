@@ -4,8 +4,9 @@
 #you can run the programme and look at the memory addresses to see the results  
 
 .data
-bf16_a: .word 0
-bf16_b: .word 0
+bf16_a: .word 0x3F80
+bf16_b: .word 0x4000
+result: .word 0
 
 # List of registers used:
 # x1: result value 
@@ -28,11 +29,19 @@ bf16_b: .word 0
 .global main
 
 main: 
+    
     la x14, bf16_a
     lw x14, 0(x14)            # load the bf16_a value
     la x15, bf16_b
     lw x15, 0(x15)            # load the bf16_b value
 
+    #programme choice
+    j sub
+
+
+  
+
+init:
     srli x4, x14, 15          # sign_a
     srli x5, x15, 15          # sign_b
     srli x6, x14, 7           # exp_a
@@ -41,9 +50,15 @@ main:
     andi x7, x7, 0xFF         # isolate exponent
     andi x8, x14, 0x7F        # mant_a
     andi x9, x15, 0x7F        # mant_b
+    jr x2
 
+sub:
+    li x16, 0x8000          
+    xor x15, x15, x16    
+    j add
     
 add:
+    jal x2, init
     li x16, 0xFF
     bne x6, x16, skip1
         bne x8, x0, return_a
@@ -145,6 +160,9 @@ combine_result:
     or x1, x1, x16
     j return
 
+return_a:
+    add x1, x14, x0
+    j return 
 return_b:
     add x1, x15, x0
     j return
@@ -154,10 +172,10 @@ return_zero:
     j return
 
 return:
-    la x7, float32
+    la x7, result
     sw x1, 0(x7)
     j end 
 
 end: 
-    li a0, 10
+    li a7, 10
     ecall
