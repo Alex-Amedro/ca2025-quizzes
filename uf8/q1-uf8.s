@@ -4,9 +4,9 @@
 #you can run the programme and look at the memory addresses to see the results  
 
 .data
-initial_value1: .word 1000
-initial_value2: .word 10000
-initial_value3: .word 100000
+initial_value1: .word 976
+initial_value2: .word 15
+initial_value3: .word 0
 
 encode_value1: .word 0
 encode_value2: .word 0
@@ -15,6 +15,18 @@ encode_value3: .word 0
 decode_value1: .word 0
 decode_value2: .word 0
 decode_value3: .word 0
+
+# Messages for test output
+msg_test1: .string "Test 1 (976): "
+msg_test2: .string "Test 2 (15): "
+msg_test3: .string "Test 3 (0): "
+msg_pass: .string "PASS\n"
+msg_fail: .string "FAIL\n"
+msg_all_pass: .string "\nAll tests PASSED!\n"
+msg_final_fail: .string "\nSome tests FAILED!\n"
+
+# Test validation
+test_results: .word 0, 0, 0      # 1 = pass, 0 = fail for each test
 
 # List of registers used:
 # x1: input value / input addresses
@@ -31,8 +43,12 @@ main:
     li x21, 0x10000                         # init stack pointer
     
     # Test 1: encode 1000
+    la a0, msg_test1
+    li a7, 4
+    ecall
     la x1, initial_value1                   # loading the address           
     lw x1, 0(x1)                            # loading the value
+    mv x19, x1
     jal x20, encode_uf8                     # call encode function
     la x10, encode_value1                   # loading the address to store the result
     sw x2, 0(x10)                           # storing the result
@@ -41,10 +57,33 @@ main:
     jal x20, decode_uf8                     # call decode function
     la x10, decode_value1                   # loading the address to store the result
     sw x2, 0(x10)                           # storing the result
+    beq x2, x19, test1_pass
+    la a0, msg_fail
+    li a7, 4
+    ecall
+    la x10, test_results
+    sw x0, 0(x10)
+    j test2_start
+
+test1_pass:
+
+    la a0, msg_pass
+    li a7, 4
+    ecall
+    la x10, test_results
+    li x11, 1
+    sw x11, 0(x10)
+
+
+test2_start:
 
     # Test 2: encode 10000
+    la a0, msg_test2
+    li a7, 4
+    ecall
     la x1, initial_value2
     lw x1, 0(x1)
+    mv x19, x1
     jal x20, encode_uf8
     la x10, encode_value2
     sw x2, 0(x10)
@@ -53,10 +92,31 @@ main:
     jal x20, decode_uf8
     la x10, decode_value2
     sw x2, 0(x10)
+    beq x2, x19, test2_pass
+    la a0, msg_fail
+    li a7, 4
+    ecall
+    la x10, test_results
+    sw x0, 4(x10)
+    j test3_start
+
+test2_pass:
+    la a0, msg_pass
+    li a7, 4
+    ecall
+    la x10, test_results
+    li x11, 1
+    sw x11, 4(x10)
+
+test3_start:
     
     # Test 3: encode 100000
+    la a0, msg_test3
+    li a7, 4
+    ecall
     la x1, initial_value3
     lw x1, 0(x1)
+    mv x19, x1
     jal x20, encode_uf8
     la x10, encode_value3
     sw x2, 0(x10)
@@ -65,6 +125,40 @@ main:
     jal x20, decode_uf8
     la x10, decode_value3
     sw x2, 0(x10)
+    beq x2, x19, test3_pass
+    la a0, msg_fail
+    li a7, 4
+    ecall
+    la x10, test_results
+    sw x0, 8(x10)
+    j final_summary
+
+test3_pass:
+    la a0, msg_pass
+    li a7, 4
+    ecall
+    la x10, test_results
+    li x11, 1
+    sw x11, 8(x10)
+
+final_summary:
+    # Check if all tests passed
+    la x10, test_results
+    lw x11, 0(x10)
+    lw x12, 4(x10)
+    lw x13, 8(x10)
+    and x14, x11, x12
+    and x14, x14, x13
+    beqz x14, failed
+    la a0, msg_all_pass
+    li a7, 4
+    ecall
+    j exit_program
+
+failed:
+    la a0, msg_final_fail
+    li a7, 4
+    ecall
 
     j exit_program
 
