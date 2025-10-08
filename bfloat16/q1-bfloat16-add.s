@@ -128,7 +128,13 @@ add:
             or x1, x1, x16
             j return
     skip9:
-    j combine_result
+    slli x1, x11, 15
+    andi x16, x12, 0xFF
+    slli x16, x16, 7
+    or x1, x1, x16
+    andi x16, x13, 0x7F
+    or x1, x1, x16
+    j return
     
 skip8:
     blt x8, x9, skip10
@@ -151,14 +157,7 @@ skip12:
         j skip12
 skip13:
 
-combine_result:
-    slli x1, x11, 15
-    andi x16, x12, 0xFF
-    slli x16, x16, 7
-    or x1, x1, x16
-    andi x16, x13, 0x7F
-    or x1, x1, x16
-    j return
+
 
 return_a:
     add x1, x14, x0
