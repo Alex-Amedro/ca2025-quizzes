@@ -143,14 +143,14 @@ test3_pass:
 
 final_summary:
     # Check if all tests passed
-    la x10, test_results
-    lw x11, 0(x10)
+    la x10, test_results                #load all the test results  
+    lw x11, 0(x10)                      
     lw x12, 4(x10)
     lw x13, 8(x10)
-    and x14, x11, x12
+    and x14, x11, x12                   # use and to see if all are 1
     and x14, x14, x13
-    beqz x14, failed
-    la a0, msg_all_pass
+    beqz x14, failed                    # if not all 1, some test failed
+    la a0, msg_all_pass                 # if yes ,all passed 
     li a7, 4
     ecall
     j exit_program
@@ -237,6 +237,7 @@ encode_uf8:
 
     skip3:
     li x7, 0
+    
     # overflow expansion loop
     loop5:
         bge x5, x15, loop5_end       # stop if exponent = 15
@@ -274,7 +275,6 @@ encode_return:
     jr x20
  
 decode_uf8:
-    # sauvegarde x20
     addi x21, x21, -4
     sw x20, 0(x21)
     

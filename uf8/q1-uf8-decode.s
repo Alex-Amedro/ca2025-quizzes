@@ -1,28 +1,14 @@
 .data
 result1: .word 0
-result2: .word 0
-result3: .word 0  
 
 .text
 .global main
 
 main:
-    # Test 1: decode 0x5f ~ 1000
+    # Test 1: decode 0x5f ~ 976
     li x1, 0x5f
     jal x20, decode_uf8
     la x10, result1
-    sw x2, 0(x10)
-    
-    # Test 2: decode 0x93 ~ 10000
-    li x1, 0x93
-    jal x20, decode_uf8
-    la x10, result2
-    sw x2, 0(x10)
-    
-    # Test 3: decode 0xc8 ~ 100000
-    li x1, 0xc8
-    jal x20, decode_uf8
-    la x10, result3
     sw x2, 0(x10)
     
     j exit_program

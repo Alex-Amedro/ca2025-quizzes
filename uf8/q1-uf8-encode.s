@@ -1,28 +1,14 @@
 .data
 result1: .word 0
-result2: .word 0
-result3: .word 0
 
 .text
 .global main
 
 main:
-    # Test 1: encode 1000
+    # Test 1: encode 976
     li x1, 1000
     jal x20, encode_uf8
     la x10, result1
-    sw x2, 0(x10)
-    
-    # Test 2: encode 10000
-    li x1, 10000
-    jal x20, encode_uf8
-    la x10, result2
-    sw x2, 0(x10)
-    
-    # Test 3: encode 100000
-    li x1, 100000
-    jal x20, encode_uf8
-    la x10, result3
     sw x2, 0(x10)
     
     j exit_program
