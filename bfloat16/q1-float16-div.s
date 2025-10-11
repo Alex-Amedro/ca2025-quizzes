@@ -126,7 +126,7 @@ div:
     
     li x16, 0x8000
     and x17, x15, x16
-    beqz x17, normalize_loop_start
+    beqz x17, loop_2
         srli x15, x15, 8
         j skip12
     
