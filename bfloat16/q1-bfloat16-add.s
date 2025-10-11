@@ -1,11 +1,10 @@
-# Functional code all made by me (no exceptions: no line completion and no generated code) (if you find something that seems AI generated i'm may be just to inteligent or more stupid than a probabilist model, we'll never know)
+# Functional code all made by me 
 # Some comments may be hard to understand due to my English, to counter that comments could have been made by Copilot
-
 #you can run the programme and look at the memory addresses to see the results  
 
 .data
-bf16_a: .word 0x3F80
-bf16_b: .word 0x4000
+bf16_a: .word 0x4000
+bf16_b: .word 0x3f80
 result: .word 0
 
 # List of registers used:
@@ -29,7 +28,6 @@ result: .word 0
 .global main
 
 main: 
-    
     la x14, bf16_a
     lw x14, 0(x14)            # load the bf16_a value
     la x15, bf16_b
@@ -37,10 +35,7 @@ main:
 
     #programme choice
     j sub
-
-
-  
-
+    
 init:
     srli x4, x14, 15          # sign_a
     srli x5, x15, 15          # sign_b
@@ -57,8 +52,9 @@ sub:
     xor x15, x15, x16    
     j add
     
+
+    
 add:
-    jal x2, init
     li x16, 0xFF
     bne x6, x16, skip1
         bne x8, x0, return_a
@@ -128,14 +124,7 @@ add:
             or x1, x1, x16
             j return
     skip9:
-    slli x1, x11, 15
-    andi x16, x12, 0xFF
-    slli x16, x16, 7
-    or x1, x1, x16
-    andi x16, x13, 0x7F
-    or x1, x1, x16
-    j return
-    
+    j skip13
 skip8:
     blt x8, x9, skip10
         add x11, x4, x0
@@ -156,12 +145,14 @@ skip12:
         blez x12, return_zero
         j skip12
 skip13:
+    slli x1, x11, 15
+    andi x16, x12, 0xFF
+    slli x16, x16, 7
+    or x1, x1, x16
+    andi x16, x13, 0x7F
+    or x1, x1, x16
+    j return
 
-
-
-return_a:
-    add x1, x14, x0
-    j return 
 return_b:
     add x1, x15, x0
     j return

@@ -1,7 +1,6 @@
-# Functional code all made by me (no exceptions: no line completion and no generated code) (if you find something that seems AI generated i'm may be just to inteligent or more stupid than a probabilist model, we'll never know)
-# Some comments may be hard to understand due to my English, to counter that comments could have been made by Copilot
-
-#you can run the programme and look at the memory addresses to see the results  
+.# Functional code all made by me (no exceptions: no line completion and no generated code)
+.# Some comments may be hard to understand due to my English level, to counter that comments could have been made by Copilot
+.#you can run the programme and look at the memory addresses to see the results  
 
 .data
 bf16_a: .word 0x3F80

@@ -97,7 +97,20 @@ mul:
         ori x9, x9, 0x80
     skip10:
     
-    mul x14, x8, x9
+    li x14, 0
+    li x17, 0
+    mul_loop_manual:
+        li x18, 8
+        beq x17, x18, mul_loop_end
+        andi x18, x9, 1
+        beqz x18, mul_skip
+            add x14, x14, x8
+        mul_skip:
+        slli x8, x8, 1
+        srli x9, x9, 1
+        addi x17, x17, 1
+        j mul_loop_manual
+    mul_loop_end:
     
     add x15, x6, x7
     li x16, 127

@@ -1,5 +1,5 @@
-# Functional code all made by me (no exceptions: no line completion and no generated code) (if you find something that seems AI generated i'm may be just to inteligent or more stupid than a probabilist model, we'll never know)
-# Some comments may be hard to understand due to my English, to counter that comments could have been made by Copilot
+# Functional code all made by me (no exceptions: no line completion and no generated code)
+# Some comments may be hard to understand due to my English level, to counter that comments could have been made by Copilot
 #you can run the programme and look at the memory addresses to see the results  
 .data
 bf16_a: .word 0x4000
@@ -75,9 +75,29 @@ sqrt:
         bltu x13, x12, end_loop
         add x15, x12, x13
         srli x15, x15, 1
-        mul x18, x15, x15
+        mv x18, x15
+        li x19, 0
+        li x20, 8
+        sqrt_mul_loop:
+            beq x19, x20, sqrt_mul_end
+            andi x21, x15, 1
+            beqz x21, sqrt_mul_skip
+                add x18, x18, x15
+            sqrt_mul_skip:
+            slli x15, x15, 1
+            srli x15, x15, 1
+            addi x19, x19, 1
+            j sqrt_mul_loop
+        sqrt_mul_end:
         li x7, 128
-        divu x18, x18, x7
+        li x19, 0
+        div_manual_sqrt:
+            bltu x18, x7, div_end_sqrt
+            sub x18, x18, x7
+            addi x19, x19, 1
+            j div_manual_sqrt
+        div_end_sqrt:
+        mv x18, x19
         bltu x11, x18, skip6
             mv x14, x15
             addi x12, x15, 1
